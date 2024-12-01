@@ -1,0 +1,143 @@
+Сравнение результатов:
+Exact Match Score (Code Only): {'exact_match': 0.153}
+ROUGE Score (Code Only): {'rouge1': 0.3861829365079363, 'rouge2': 0.1928011904761905, 'rougeL': 0.3851968253968251, 'rougeLsum': 0.38379404761904745}
+Exact Match Score (Code with Docs): {'exact_match': 0.209}
+ROUGE Score (Code with Docs): {'rouge1': 0.4694119769119771, 'rouge2': 0.26967023809523805, 'rougeL': 0.46717665945165954, 'rougeLsum': 0.46668156565656604}
+
+Примеры с наихудшими значениями метрик:
+
+для exact_match:
+
+Original Function Name: YouTube.get_vid_from_url
+Predicted Function Name: extract_video_id
+Function Body: def get_vid_from_url(url):
+        """Extracts video ID from URL.
+        """
+        return match1(url, r'youtu\.be/([^?/]+)') or \
+          match1(url, r'youtube\.com/embed/([^/?]+)') or \
+          match1(url, r'youtube\.com/v/([^/?]+)') or \
+          match1(url, r'youtube\.com/watch/([^/?]+)') or \
+          parse_query_param(url, 'v') or \
+          parse_query_param(parse_query_param(url, 'u'), 'v')
+
+
+Original Function Name: sina_xml_to_url_list
+Predicted Function Name: parse_xml
+Function Body: def sina_xml_to_url_list(xml_data):
+    """str->list
+    Convert XML to URL List.
+    From Biligrab.
+    """
+    rawurl = []
+    dom = parseString(xml_data)
+    for node in dom.getElementsByTagName('durl'):
+        url = node.getElementsByTagName('url')[0]
+        rawurl.append(url.childNodes[0].data)
+    return rawurl
+
+
+Original Function Name: makeMimi
+Predicted Function Name: package
+Function Body: def makeMimi(upid):
+    """From http://cdn37.atwikiimg.com/sitescript/pub/dksitescript/FC2.site.js
+    Also com.hps.util.fc2.FC2EncrptUtil.makeMimiLocal
+    L110"""
+    strSeed = "gGddgPfeaf_gzyr"
+    prehash = upid + "_" + strSeed
+    return md5(prehash.encode('utf-8')).hexdigest()
+
+
+Original Function Name: fc2video_download
+Predicted Function Name: fc2video_download_by_upid
+Function Body: def fc2video_download(url, output_dir = '.', merge = True, info_only = False, **kwargs):
+    """wrapper"""
+    #'http://video.fc2.com/en/content/20151021bTVKnbEw'
+    #'http://xiaojiadianvideo.asia/content/20151021bTVKnbEw'
+    #'http://video.fc2.com/ja/content/20151021bTVKnbEw'
+    #'http://video.fc2.com/tw/content/20151021bTVKnbEw'
+    hostname = urlparse(url).hostname
+    if not ('fc2.com' in hostname or 'xiaojiadianvideo.asia' in hostname):
+        return False
+    upid = match1(url, r'.+/content/(\w+)')
+
+    fc2video_download_by_upid(upid, output_dir, merge, info_only)
+
+
+Original Function Name: dailymotion_download
+Predicted Function Name: download_urls
+Function Body: def dailymotion_download(url, output_dir='.', merge=True, info_only=False, **kwargs):
+    """Downloads Dailymotion videos by URL.
+    """
+
+    html = get_content(rebuilt_url(url))
+    info = json.loads(match1(html, r'qualities":({.+?}),"'))
+    title = match1(html, r'"video_title"\s*:\s*"([^"]+)"') or \
+            match1(html, r'"title"\s*:\s*"([^"]+)"')
+    title = unicodize(title)
+
+    for quality in ['1080','720','480','380','240','144','auto']:
+        try:
+            real_url = info[quality][1]["url"]
+            if real_url:
+                break
+        except KeyError:
+            pass
+
+    mime, ext, size = url_info(real_url)
+
+    print_info(site_info, title, mime, size)
+    if not info_only:
+        download_urls([real_url], title, ext, size, output_dir=output_dir, merge=merge)
+
+======================================================================================================
+
+Для rouge1:
+
+Original Function Name: YouTube.get_vid_from_url
+Predicted Function Name: extract_video_id
+Function Body: def get_vid_from_url(url):
+        """Extracts video ID from URL.
+        """
+        return match1(url, r'youtu\.be/([^?/]+)') or \
+          match1(url, r'youtube\.com/embed/([^/?]+)') or \
+          match1(url, r'youtube\.com/v/([^/?]+)') or \
+          match1(url, r'youtube\.com/watch/([^/?]+)') or \
+          parse_query_param(url, 'v') or \
+          parse_query_param(parse_query_param(url, 'u'), 'v')
+
+
+Original Function Name: makeMimi
+Predicted Function Name: package
+Function Body: def makeMimi(upid):
+    """From http://cdn37.atwikiimg.com/sitescript/pub/dksitescript/FC2.site.js
+    Also com.hps.util.fc2.FC2EncrptUtil.makeMimiLocal
+    L110"""
+    strSeed = "gGddgPfeaf_gzyr"
+    prehash = upid + "_" + strSeed
+    return md5(prehash.encode('utf-8')).hexdigest()
+
+
+Original Function Name: sprint
+Predicted Function Name: format_text
+Function Body: def sprint(text, *colors):
+    """Format text with color or other effects into ANSI escaped string."""
+    return "\33[{}m{content}\33[{}m".format(";".join([str(color) for color in colors]), RESET, content=text) if IS_ANSI_TERMINAL and colors else text
+
+
+Original Function Name: e
+Predicted Function Name: print_error
+Function Body: def e(message, exit_code=None):
+    """Print an error log message."""
+    print_log(message, YELLOW, BOLD)
+    if exit_code is not None:
+        sys.exit(exit_code)
+
+
+Original Function Name: wtf
+Predicted Function Name: exit_code
+Function Body: def wtf(message, exit_code=1):
+    """What a Terrible Failure!"""
+    print_log(message, RED, BOLD)
+    if exit_code is not None:
+        sys.exit(exit_code)
+
