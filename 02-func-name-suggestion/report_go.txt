@@ -1,0 +1,130 @@
+Без постобработки метрики еще хуже :(
+
+Сравнение результатов:
+Exact Match Score (Code Only): {'exact_match': 0.102}
+ROUGE Score (Code Only): {'rouge1': 0.16056666666666666, 'rouge2': 0.0, 'rougeL': 0.16119999999999998, 'rougeLsum': 0.16085}
+Exact Match Score (Code with Docs): {'exact_match': 0.1}
+ROUGE Score (Code with Docs): {'rouge1': 0.16051666666666667, 'rouge2': 0.0, 'rougeL': 0.16133333333333333, 'rougeLsum': 0.16066666666666668}
+
+Примеры с наихудшими значениями метрик:
+
+для exact_match:
+
+Original Function Name: mustWaitPinReady
+Predicted Function Name: TestGet
+Function Body: func mustWaitPinReady(t *testing.T, cli *clientv3.Client) {
+	// TODO: decrease timeout after balancer rewrite!!!
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	_, err := cli.Get(ctx, "foo")
+	cancel()
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+
+Original Function Name: newGatewayCommand
+Predicted Function Name: newGatewayStartCommand
+Function Body: func newGatewayCommand() *cobra.Command {
+	lpc := &cobra.Command{
+		Use:   "gateway <subcommand>",
+		Short: "gateway related command",
+	}
+	lpc.AddCommand(newGatewayStartCommand())
+
+	return lpc
+}
+
+
+Original Function Name: WithAbortContext
+Predicted Function Name: init
+Function Body: func WithAbortContext(ctx context.Context) stmOption {
+	return func(so *stmOptions) { so.ctx = ctx }
+}
+
+
+Original Function Name: WithPrefetch
+Predicted Function Name: init
+Function Body: func WithPrefetch(keys ...string) stmOption {
+	return func(so *stmOptions) { so.prefetch = append(so.prefetch, keys...) }
+}
+
+
+Original Function Name: NewSTM
+Predicted Function Name: Run
+Function Body: func NewSTM(c *v3.Client, apply func(STM) error, so ...stmOption) (*v3.TxnResponse, error) {
+	opts := &stmOptions{ctx: c.Ctx()}
+	for _, f := range so {
+		f(opts)
+	}
+	if len(opts.prefetch) != 0 {
+		f := apply
+		apply = func(s STM) error {
+			s.Get(opts.prefetch...)
+			return f(s)
+		}
+	}
+	return runSTM(mkSTM(c, opts), apply)
+}
+
+======================================================================================================
+
+Для rouge1:
+
+Original Function Name: mustWaitPinReady
+Predicted Function Name: TestGet
+Function Body: func mustWaitPinReady(t *testing.T, cli *clientv3.Client) {
+	// TODO: decrease timeout after balancer rewrite!!!
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	_, err := cli.Get(ctx, "foo")
+	cancel()
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+
+Original Function Name: newGatewayCommand
+Predicted Function Name: newGatewayStartCommand
+Function Body: func newGatewayCommand() *cobra.Command {
+	lpc := &cobra.Command{
+		Use:   "gateway <subcommand>",
+		Short: "gateway related command",
+	}
+	lpc.AddCommand(newGatewayStartCommand())
+
+	return lpc
+}
+
+
+Original Function Name: WithAbortContext
+Predicted Function Name: init
+Function Body: func WithAbortContext(ctx context.Context) stmOption {
+	return func(so *stmOptions) { so.ctx = ctx }
+}
+
+
+Original Function Name: WithPrefetch
+Predicted Function Name: init
+Function Body: func WithPrefetch(keys ...string) stmOption {
+	return func(so *stmOptions) { so.prefetch = append(so.prefetch, keys...) }
+}
+
+
+Original Function Name: NewSTM
+Predicted Function Name: Run
+Function Body: func NewSTM(c *v3.Client, apply func(STM) error, so ...stmOption) (*v3.TxnResponse, error) {
+	opts := &stmOptions{ctx: c.Ctx()}
+	for _, f := range so {
+		f(opts)
+	}
+	if len(opts.prefetch) != 0 {
+		f := apply
+		apply = func(s STM) error {
+			s.Get(opts.prefetch...)
+			return f(s)
+		}
+	}
+	return runSTM(mkSTM(c, opts), apply)
+}
+
